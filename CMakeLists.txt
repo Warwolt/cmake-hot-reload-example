@@ -3,21 +3,18 @@ project(Example C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
-# Source
-add_library(MyLib OBJECT src/mylib.cpp)
-target_include_directories(MyLib PUBLIC include)
-
 # Debug DLL
-add_library(MyLibShared SHARED)
-target_link_libraries(MyLibShared PUBLIC debug MyLib)
+add_library(MyLibShared SHARED src/mylib.cpp)
+set_target_properties(MyLibShared PROPERTIES OUTPUT_NAME MyLib)
+target_include_directories(MyLibShared PUBLIC include)
+target_compile_definitions(MyLibShared PRIVATE MYLIB_SHARED)
 
-# Release lib
-add_library(MyLibStatic STATIC)
-target_link_libraries(MyLibStatic PUBLIC optimized MyLib)
-set_property(TARGET MyLibStatic PROPERTY LINKER_LANGUAGE CXX)
+# # Static library
+add_library(MyLibStatic STATIC src/mylib.cpp)
+set_target_properties(MyLibStatic PROPERTIES OUTPUT_NAME MyLib)
+target_compile_definitions(MyLibStatic PRIVATE "$<$<CONFIG:Debug>:IMPORT_LIBRARY>")
+target_include_directories(MyLibStatic PUBLIC include)
 
-# Executable
+# # Executable
 add_executable(MyApp src/main.cpp)
-target_link_libraries(MyApp
-    debug MyLibShared
-    optimized MyLibStatic)
+target_link_libraries(MyApp MyLibStatic)
