@@ -1,5 +1,11 @@
 #include "mylib.h"
 
+#include <windows.h>
+
 int main() {
-    hello();
+	int number = 1;
+	while (true) {
+		hello(number++);
+		Sleep(1000);
+	}
 }
