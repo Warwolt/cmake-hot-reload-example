@@ -7,12 +7,14 @@ set(CMAKE_CXX_STANDARD 23)
 add_library(MyLibShared SHARED src/mylib.cpp)
 set_target_properties(MyLibShared PROPERTIES OUTPUT_NAME MyLib)
 target_include_directories(MyLibShared PUBLIC include)
-target_compile_definitions(MyLibShared PRIVATE MYLIB_SHARED)
 
 # # Static library
-add_library(MyLibStatic STATIC src/mylib.cpp)
+add_library(MyLibStatic STATIC)
+target_sources(MyLibStatic PRIVATE
+    $<$<CONFIG:Debug>:src/mylib_load.cpp>
+    $<$<CONFIG:Release>:src/mylib.cpp>
+)
 set_target_properties(MyLibStatic PROPERTIES OUTPUT_NAME MyLib)
-target_compile_definitions(MyLibStatic PRIVATE "$<$<CONFIG:Debug>:IMPORT_LIBRARY>")
 target_include_directories(MyLibStatic PUBLIC include)
 
 # # Executable

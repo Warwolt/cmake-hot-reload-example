@@ -1,11 +1,7 @@
 #pragma once
 
-#ifdef MYLIB_SHARED
-    #ifdef EXPORT_MYLIB
-        #define MYLIB_API __declspec(dllexport)
-    #else
-        #define MYLIB_API __declspec(dllimport)
-    #endif
+#ifdef _DEBUG
+    #define MYLIB_API __declspec(dllexport)
 #else
     #define MYLIB_API
 #endif
