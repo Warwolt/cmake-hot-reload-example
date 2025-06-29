@@ -94,8 +94,7 @@ std::expected<ExitCode, std::string> run_command(std::string cmd) {
 	DWORD available;
 	bool process_running = true;
 
-	while (process_running || PeekNamedPipe(stdout_read, NULL, 0, NULL, &available, NULL) && available > 0 ||
-		   PeekNamedPipe(stderr_read, NULL, 0, NULL, &available, NULL) && available > 0) {
+	while (process_running || PeekNamedPipe(stdout_read, NULL, 0, NULL, &available, NULL) && available > 0 || PeekNamedPipe(stderr_read, NULL, 0, NULL, &available, NULL) && available > 0) {
 		if (PeekNamedPipe(stdout_read, NULL, 0, NULL, &available, NULL) && available > 0) {
 			if (ReadFile(stdout_read, buffer, sizeof(buffer) - 1, &bytes_read, NULL) && bytes_read > 0) {
 				buffer[bytes_read] = '\0';
@@ -117,7 +116,7 @@ std::expected<ExitCode, std::string> run_command(std::string cmd) {
 		process_running = (wait_result == WAIT_TIMEOUT);
 	}
 
-    // close read pipes
+	// close read pipes
 	CloseHandle(stdout_read);
 	CloseHandle(stderr_read);
 

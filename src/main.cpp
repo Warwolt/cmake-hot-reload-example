@@ -18,6 +18,13 @@ int64_t time_now_ms() {
 	return ticks.QuadPart * 1000 / pc_freq;
 }
 
+void run_cmake_build() {
+	std::expected<ExitCode, std::string> result = run_command("cmake --build build --config Debug");
+	if (!result) {
+		printf("Error: %s", result.error().c_str());
+	}
+}
+
 int main() {
 	int number = 1;
 	int64_t time_start = time_now_ms();
@@ -30,11 +37,7 @@ int main() {
 		bool button_pressed_now = button_state && !prev_button_state;
 		prev_button_state = button_state;
 		if (button_pressed_now) {
-			const char* command = "echo hello!";
-			std::expected<ExitCode, std::string> result = run_command(command);
-			if (!result) {
-				printf("Error: %s", result.error().c_str());
-			}
+			run_cmake_build();
 		}
 
 		if (elapsed_time >= 1000) {
