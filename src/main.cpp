@@ -1,4 +1,5 @@
-#include "mylib.h"
+#include <mylib.h>
+#include <run_command.h>
 
 #include <stdint.h>
 #include <stdio.h>
@@ -26,10 +27,14 @@ int main() {
 		int64_t elapsed_time = time_now - time_start;
 
 		bool button_state = GetKeyState(VK_F10) & 0x8000;
-		bool button_pressed_now = button_state && ! prev_button_state;
+		bool button_pressed_now = button_state && !prev_button_state;
 		prev_button_state = button_state;
 		if (button_pressed_now) {
-			printf("F10 pressed\n");
+			const char* command = "echo hello!";
+			std::expected<ExitCode, std::string> result = run_command(command);
+			if (!result) {
+				printf("Error: %s", result.error().c_str());
+			}
 		}
 
 		if (elapsed_time >= 1000) {
