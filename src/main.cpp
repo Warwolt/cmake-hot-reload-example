@@ -1,4 +1,5 @@
 #include <mylib.h>
+#include <mylib_load.h>
 #include <run_command.h>
 
 #include <stdint.h>
@@ -26,6 +27,10 @@ void run_cmake_build() {
 }
 
 int main() {
+#ifdef _DEBUG
+	load_mylib();
+#endif
+
 	int number = 1;
 	int64_t time_start = time_now_ms();
 	bool prev_button_state = false;
@@ -37,7 +42,9 @@ int main() {
 		bool button_pressed_now = button_state && !prev_button_state;
 		prev_button_state = button_state;
 		if (button_pressed_now) {
+#ifdef _DEBUG
 			run_cmake_build();
+#endif
 		}
 
 		if (elapsed_time >= 1000) {
