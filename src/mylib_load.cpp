@@ -14,6 +14,16 @@ struct Library {
 
 static Library g_library;
 
+template <typename FN>
+FN load_function(HINSTANCE dll_handle, const char* function_name) {
+	FN fn = (FN)GetProcAddress(dll_handle, function_name);
+	if (!fn) {
+		printf("Couldn't load function %s from DLL!\n", function_name);
+		return nullptr;
+	}
+	return fn;
+}
+
 void load_mylib() {
 #ifdef _DEBUG
 	std::string dll_path = "build/debug/MyLib.dll";
@@ -34,15 +44,11 @@ void load_mylib() {
 		return;
 	}
 
-	// FIXME: generalize this so we can easily express loading multiple different functions
-	void (*fn)(int) = (void (*)(int))GetProcAddress(g_library.handle, "hello");
-	if (!fn) {
-		printf("Couldn't load function %s from %s!\n", "hello", dll_path.c_str());
-		return;
+	if (auto* fn = load_function<decltype(Library::hello)>(g_library.handle, "hello")) {
+		g_library.hello = fn;
 	}
-	g_library.hello = fn;
 
-#endif // _DEBUG
+	#endif // _DEBUG
 }
 
 #ifdef _DEBUG
