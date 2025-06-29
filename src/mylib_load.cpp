@@ -24,6 +24,16 @@ FN load_function(HINSTANCE dll_handle, const char* function_name) {
 	return fn;
 }
 
+#define BIND_FUNCTION(library, function)                                                        \
+	do {                                                                                        \
+		if (auto* fn = load_function<decltype(Library::function)>(library.handle, #function)) { \
+			library.function = fn;                                                              \
+		}                                                                                       \
+		else {                                                                                  \
+			printf("Could't find function %s in DLL", #function);                               \
+		}                                                                                       \
+	} while (0)
+
 void load_mylib() {
 #ifdef _DEBUG
 	std::string dll_path = "build/debug/MyLib.dll";
@@ -44,11 +54,9 @@ void load_mylib() {
 		return;
 	}
 
-	if (auto* fn = load_function<decltype(Library::hello)>(g_library.handle, "hello")) {
-		g_library.hello = fn;
-	}
+	BIND_FUNCTION(g_library, hello);
 
-	#endif // _DEBUG
+#endif // _DEBUG
 }
 
 #ifdef _DEBUG
