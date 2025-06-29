@@ -71,5 +71,4 @@ int next_number(int num) {
 	return g_library.next_number(num);
 }
 
-
 #endif // _DEBUG

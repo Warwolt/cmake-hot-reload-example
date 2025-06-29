@@ -9,16 +9,16 @@ set_target_properties(MyLibShared PROPERTIES OUTPUT_NAME MyLib)
 target_include_directories(MyLibShared PUBLIC src)
 
 # # Static library
-add_library(MyLibStatic STATIC)
-target_sources(MyLibStatic PRIVATE
+add_library(MyLibStatic STATIC
     $<$<CONFIG:Debug>:src/mylib_load.cpp>
     $<$<CONFIG:Release>:src/mylib.cpp>
+    src/win32.cpp
 )
 set_target_properties(MyLibStatic PROPERTIES OUTPUT_NAME MyLib)
 target_include_directories(MyLibStatic PUBLIC src)
 
 # # Executable
-add_executable(MyApp src/main.cpp src/win32.cpp)
+add_executable(MyApp src/main.cpp)
 target_link_libraries(MyApp MyLibStatic)
 target_include_directories(MyApp PUBLIC src)
 set_property(TARGET MyApp PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")

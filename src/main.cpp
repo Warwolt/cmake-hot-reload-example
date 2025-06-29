@@ -7,6 +7,12 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#ifdef _DEBUG
+constexpr bool debug_build = true;
+#else
+constexpr bool debug_build = false;
+#endif
+
 int64_t get_pc_frequency() {
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
@@ -31,35 +37,33 @@ bool run_cmake_build() {
 	return true;
 }
 
-// FIXME: replace ifdef _DEBUG with constexpr if debug
-
 void update_hot_reloading() {
-#ifdef _DEBUG
-	/* Rebuild library on button press */
-	static bool prev_button_state = false;
-	bool button_state = GetKeyState(VK_F10) & 0x8000;
-	bool button_pressed_now = button_state && !prev_button_state;
-	prev_button_state = button_state;
-	if (button_pressed_now) {
-		run_cmake_build();
-	}
+	if constexpr (debug_build) {
+		/* Rebuild library on button press */
+		static bool prev_button_state = false;
+		bool button_state = GetKeyState(VK_F10) & 0x8000;
+		bool button_pressed_now = button_state && !prev_button_state;
+		prev_button_state = button_state;
+		if (button_pressed_now) {
+			run_cmake_build();
+		}
 
-	/* Reload library if the file has changed */
-	std::string dll_path = "build/debug/MyLib.dll";
-	static FILETIME last_time_modified = file_last_modified(dll_path).value();
-	if (std::optional<FILETIME> time_modified = file_last_modified(dll_path)) {
-		if (CompareFileTime(&time_modified.value(), &last_time_modified) != 0) {
-			last_time_modified = *time_modified;
-			load_mylib();
+		/* Reload library if the file has changed */
+		std::string dll_path = "build/debug/MyLib.dll";
+		static FILETIME last_time_modified = file_last_modified(dll_path).value();
+		if (std::optional<FILETIME> time_modified = file_last_modified(dll_path)) {
+			if (CompareFileTime(&time_modified.value(), &last_time_modified) != 0) {
+				last_time_modified = *time_modified;
+				load_mylib();
+			}
 		}
 	}
-#endif
 }
 
 void initialize() {
-#ifdef _DEBUG
-	load_mylib();
-#endif
+	if constexpr (debug_build) {
+		load_mylib();
+	}
 }
 
 int main() {
