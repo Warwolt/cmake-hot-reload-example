@@ -31,6 +31,8 @@ bool run_cmake_build() {
 	return true;
 }
 
+// FIXME: replace ifdef _DEBUG with constexpr if debug
+
 void update_hot_reloading() {
 #ifdef _DEBUG
 	/* Rebuild library on button press */
@@ -74,7 +76,8 @@ int main() {
 
 		if (elapsed_time >= 1000) {
 			time_start = time_now;
-			hello(number++);
+			hello(number);
+			number = next_number(number);
 		}
 	}
 }

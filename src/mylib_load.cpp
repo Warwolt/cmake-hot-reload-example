@@ -10,6 +10,7 @@
 struct Library {
 	HINSTANCE handle;
 	void (*hello)(int num);
+	int (*next_number)(int num);
 };
 
 static Library g_library;
@@ -55,12 +56,20 @@ void load_mylib() {
 	}
 
 	BIND_FUNCTION(g_library, hello);
+	BIND_FUNCTION(g_library, next_number);
 
 #endif // _DEBUG
 }
 
 #ifdef _DEBUG
+
 void hello(int num) {
 	g_library.hello(num);
 }
+
+int next_number(int num) {
+	return g_library.next_number(num);
+}
+
+
 #endif // _DEBUG
