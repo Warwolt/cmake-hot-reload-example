@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 23)
 # Debug DLL
 add_library(MyLibShared SHARED src/mylib.cpp)
 set_target_properties(MyLibShared PROPERTIES OUTPUT_NAME MyLib)
-target_include_directories(MyLibShared PUBLIC include)
 target_include_directories(MyLibShared PUBLIC src)
 
 # # Static library
@@ -16,7 +15,6 @@ target_sources(MyLibStatic PRIVATE
     $<$<CONFIG:Release>:src/mylib.cpp>
 )
 set_target_properties(MyLibStatic PROPERTIES OUTPUT_NAME MyLib)
-target_include_directories(MyLibStatic PUBLIC include)
 target_include_directories(MyLibStatic PUBLIC src)
 
 # # Executable
