@@ -1,4 +1,4 @@
-#include <run_command.h>
+#include <win32.h>
 
 #include <windows.h>
 
@@ -131,4 +131,35 @@ std::expected<ExitCode, std::string> run_command(std::string cmd) {
 	CloseHandle(process_info.hThread);
 
 	return (int)exit_code;
+}
+
+std::optional<FILETIME> file_last_modified(std::string file_path) {
+	/* Open file */
+	HANDLE file = CreateFileA(
+		file_path.c_str(),
+		GENERIC_READ,
+		FILE_SHARE_READ,
+		NULL,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL
+	);
+
+	/* Read time modified */
+	FILETIME create_time, access_time, write_time;
+	if (!GetFileTime(file, &create_time, &access_time, &write_time)) {
+		// it's expected for this to fail when trying to reload, so don't print any error
+		CloseHandle(file);
+		return {};
+	}
+
+	FILETIME localized_write_time;
+	if (!FileTimeToLocalFileTime(&write_time, &localized_write_time)) {
+		std::string error = get_win32_error();
+		CloseHandle(file);
+		return {};
+	}
+
+	CloseHandle(file);
+	return localized_write_time;
 }

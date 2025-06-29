@@ -18,7 +18,7 @@ set_target_properties(MyLibStatic PROPERTIES OUTPUT_NAME MyLib)
 target_include_directories(MyLibStatic PUBLIC src)
 
 # # Executable
-add_executable(MyApp src/main.cpp src/run_command.cpp)
+add_executable(MyApp src/main.cpp src/win32.cpp)
 target_link_libraries(MyApp MyLibStatic)
 target_include_directories(MyApp PUBLIC src)
 set_property(TARGET MyApp PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")

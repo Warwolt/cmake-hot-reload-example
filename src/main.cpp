@@ -1,10 +1,11 @@
 #include <mylib.h>
 #include <mylib_load.h>
-#include <run_command.h>
+#include <win32.h>
+
+#include <windows.h>
 
 #include <stdint.h>
 #include <stdio.h>
-#include <windows.h>
 
 int64_t get_pc_frequency() {
 	LARGE_INTEGER frequency;
@@ -30,24 +31,25 @@ bool run_cmake_build() {
 	return true;
 }
 
-void reload_code() {
-#ifdef _DEBUG
-	bool build_ok = run_cmake_build();
-	if (build_ok) {
-		printf("trying to reload lib\n");
-		load_mylib();
-	}
-#endif
-}
-
 void update_hot_reloading() {
 #ifdef _DEBUG
+	/* Rebuild library on button press */
 	static bool prev_button_state = false;
 	bool button_state = GetKeyState(VK_F10) & 0x8000;
 	bool button_pressed_now = button_state && !prev_button_state;
 	prev_button_state = button_state;
 	if (button_pressed_now) {
-		reload_code();
+		run_cmake_build();
+	}
+
+	/* Reload library if the file has changed */
+	std::string dll_path = "build/debug/MyLib.dll";
+	static FILETIME last_time_modified = file_last_modified(dll_path).value();
+	if (std::optional<FILETIME> time_modified = file_last_modified(dll_path)) {
+		if (CompareFileTime(&time_modified.value(), &last_time_modified) != 0) {
+			last_time_modified = *time_modified;
+			load_mylib();
+		}
 	}
 #endif
 }
