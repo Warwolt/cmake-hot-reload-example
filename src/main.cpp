@@ -71,7 +71,6 @@ int main() {
 
 	int number = 1;
 	int64_t time_start = time_now_ms();
-	bool prev_button_state = false;
 	while (true) {
 		int64_t time_now = time_now_ms();
 		int64_t elapsed_time = time_now - time_start;
