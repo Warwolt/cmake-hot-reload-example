@@ -1,10 +1,11 @@
-#include <mylib_load.h>
 #include <mylib.h>
+#include <mylib_load.h>
 
-#include <stdio.h>
 #include <windows.h>
 
-#ifdef _DEBUG
+#include <filesystem>
+#include <stdio.h>
+#include <string>
 
 struct Library {
 	void (*hello)(int num);
@@ -13,10 +14,15 @@ struct Library {
 static Library g_library;
 
 void load_mylib() {
-	// FIXME: we should copy the DLL first before loading it to permit hot reloading
+#ifdef _DEBUG
+	std::string dll_path = "build/debug/MyLib.dll";
+	std::string dll_copy_path = "build/debug/MyLib-copy.dll";
 
-	const char* dll_path = "build/debug/MyLib.dll";
-	HINSTANCE dll_handle = LoadLibrary(dll_path);
+	// copy DLL
+	std::filesystem::copy(dll_path, dll_copy_path, std::filesystem::copy_options::update_existing);
+
+	// load copy
+	HINSTANCE dll_handle = LoadLibrary(dll_copy_path.c_str());
 	if (!dll_handle) {
 		printf("Couldn't load DLL!\n");
 		exit(1);
@@ -24,14 +30,15 @@ void load_mylib() {
 
 	void (*fn)(int) = (void (*)(int))GetProcAddress(dll_handle, "hello");
 	if (!fn) {
-		printf("Couldn't load function %s from %s!\n", "hello", dll_path);
+		printf("Couldn't load function %s from %s!\n", "hello", dll_path.c_str());
 		return;
 	}
 	g_library.hello = fn;
+#endif // _DEBUG
 }
 
+#ifdef _DEBUG
 void hello(int num) {
 	g_library.hello(num);
 }
-
 #endif // _DEBUG
