@@ -8,6 +8,10 @@ constexpr bool is_shared_library = true;
 constexpr bool is_shared_library = false;
 #endif
 
-void hello() {
-    printf("Hello %s world!\n", is_shared_library ? ".dll" : ".lib");
+void hello(int num) {
+	printf("Hello %s world! %d\n", is_shared_library ? ".dll" : ".lib", num);
+}
+
+int next_number(int num) {
+	return num + 1;
 }
