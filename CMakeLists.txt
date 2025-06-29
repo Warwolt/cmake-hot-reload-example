@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.0.2)
-project(Example C CXX)
+project(MyApp C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
@@ -20,3 +20,5 @@ target_include_directories(MyLibStatic PUBLIC include)
 # # Executable
 add_executable(MyApp src/main.cpp)
 target_link_libraries(MyApp MyLibStatic)
+set_property(TARGET MyApp PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MyApp)
